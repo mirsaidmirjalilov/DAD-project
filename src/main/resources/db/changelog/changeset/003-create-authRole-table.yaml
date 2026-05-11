@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-authRole
+      author: team
+      changes:
+        - createTable:
+            tableName: auth_roles
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+        - createTable:
+            tableName: auth_role_permissions
+            columns:
+              - column:
+                  name: role_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_perms_role
+                    referencedTableName: auth_roles
+                    referencedColumnNames: id
+              - column:
+                  name: permission_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_perms_permission
+                    referencedTableName: auth_permissions
+                    referencedColumnNames: id
+        - addPrimaryKey:
+            tableName: auth_role_permissions
+            columnNames: role_id, permission_id
+            constraintName: pk_auth_role_permissions
