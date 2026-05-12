@@ -1,7 +1,6 @@
 package com.example.fooddeliverymarketplace.service.paging;
 
 import com.example.fooddeliverymarketplace.entity.User;
-import com.example.fooddeliverymarketplace.repository.UserRepository;
 import com.example.fooddeliverymarketplace.utils.Role;
 import com.example.fooddeliverymarketplace.utils.UserStatus;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class SpecificationService {
-    private final UserRepository userRepository;
-
     public Specification<User> getUserSpecification(Role role, UserStatus userStatus) {
         Specification<User> specification = null;
 

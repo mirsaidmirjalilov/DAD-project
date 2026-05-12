@@ -1,5 +1,9 @@
 package com.example.fooddeliverymarketplace.exception;
 
+import com.example.fooddeliverymarketplace.exception.menuitem.ItemInMenuNotFoundException;
+import com.example.fooddeliverymarketplace.exception.restaurant.RestaurantNotFoundException;
+import com.example.fooddeliverymarketplace.exception.user.UserAlreadyExistException;
+import com.example.fooddeliverymarketplace.exception.user.UserNotFoundException;
 import com.example.fooddeliverymarketplace.payload.BaseResponse;
 import com.example.fooddeliverymarketplace.payload.ErrorDTO;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -59,6 +63,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public final ResponseEntity<BaseResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        ErrorDTO error = getErrorDTO(ex, HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(BaseResponse.error(error));
+    }
+
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public final ResponseEntity<BaseResponse> handleRestaurantNotFoundException(RestaurantNotFoundException ex) {
+        ErrorDTO error = getErrorDTO(ex, HttpStatus.NOT_FOUND.value());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(BaseResponse.error(error));
+    }
+
+    @ExceptionHandler(ItemInMenuNotFoundException.class)
+    public final ResponseEntity<BaseResponse> handleItemInMenuNotFoundException(ItemInMenuNotFoundException ex) {
         ErrorDTO error = getErrorDTO(ex, HttpStatus.NOT_FOUND.value());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(BaseResponse.error(error));

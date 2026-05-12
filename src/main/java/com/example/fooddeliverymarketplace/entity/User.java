@@ -3,6 +3,7 @@ package com.example.fooddeliverymarketplace.entity;
 import com.example.fooddeliverymarketplace.utils.Role;
 import com.example.fooddeliverymarketplace.utils.UserStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -30,6 +31,7 @@ public class User {
     private String phoneNumber;
 
     @Column(name = "email",unique = true, nullable = false)
+    @Email
     private String email;
 
     @Column(name = "password",nullable = false)
@@ -44,17 +46,11 @@ public class User {
     private UserStatus status;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
 }

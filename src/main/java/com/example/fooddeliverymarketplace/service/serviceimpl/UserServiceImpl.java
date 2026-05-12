@@ -1,8 +1,8 @@
-package com.example.fooddeliverymarketplace.service.userserviceimpl;
+package com.example.fooddeliverymarketplace.service.serviceimpl;
 
 import com.example.fooddeliverymarketplace.entity.User;
-import com.example.fooddeliverymarketplace.exception.UserAlreadyExistException;
-import com.example.fooddeliverymarketplace.exception.UserNotFoundException;
+import com.example.fooddeliverymarketplace.exception.user.UserAlreadyExistException;
+import com.example.fooddeliverymarketplace.exception.user.UserNotFoundException;
 import com.example.fooddeliverymarketplace.mapper.UserMapper;
 import com.example.fooddeliverymarketplace.payload.userpayload.UserRequest;
 import com.example.fooddeliverymarketplace.payload.userpayload.UserResponse;
@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public UserResponse create(UserRequest userRequest) {
+    public UserResponse create(UserRequest userRequest, Authentication authentication) {
+        checkIsAdmin(authentication);
+
         if (userRepository.existsByEmail(userRequest.email())) {
             throw new UserAlreadyExistException("User already exists");
         }
@@ -53,14 +57,19 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
+
+
     @Override
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public List<UserResponse> getAllUsers(
             Role role,
             UserStatus userStatus,
             int page,
-            int size
+            int size,
+            Authentication authentication
     ) {
+        checkIsAdmin(authentication);
+
         Pageable pageable = PageRequest.of(page, size);
 
         Specification<User> specification = specificationService.getUserSpecification(role, userStatus);
@@ -74,59 +83,60 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(@NonNull Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public UserResponse getUserById(@NonNull Long userId,Authentication authentication) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
 
-        if (optionalUser.isPresent()) {
-            return userMapper.toUserResponse(optionalUser.get());
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
+        String email = authentication.getName();
+
+        checkIsAdmin(authentication);
+
+        checkIsOwner(user,email);
+
+        return userMapper.toUserResponse(user);
+    }
+
+
+
+    @Override
+    public UserResponse updateUser(@NonNull Long userId, UserRequest userRequest,Authentication authentication) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
+
+        String email = authentication.getName();
+
+        checkIsAdmin(authentication);
+
+        checkIsOwner(user,email);
+
+        return userMapper.toUserResponse(user);
     }
 
     @Override
-    public UserResponse updateUser(@NonNull Long userId, UserRequest userRequest) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public void deleteUserById(@NonNull Long userId,Authentication authentication) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+        checkIsAdmin(authentication);
 
-            user.setFullName(userRequest.fullName());
-            user.setEmail(userRequest.email());
-            user.setPhoneNumber(userRequest.phoneNumber());
-            user.setPassword(passwordEncoder.encode(userRequest.password()));
-            user.setRole(userRequest.role());
-            user.setStatus(userRequest.status());
-            userRepository.save(user);
-
-            return userMapper.toUserResponse(user);
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
+        user.setStatus(UserStatus.DELETED);
+        userRepository.save(user);
     }
 
     @Override
-    public void deleteUserById(@NonNull Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            optionalUser.get().setStatus(UserStatus.DELETED);
-            userRepository.save(optionalUser.get());
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
-    }
+    public UserResponse changeUserStatus(
+            @NonNull Long userId,
+            UserStatus userStatus,
+            Authentication authentication
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
 
-    @Override
-    public UserResponse changeUserStatus(@NonNull Long userId, UserStatus userStatus) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setStatus(userStatus);
-            userRepository.save(user);
-            return userMapper.toUserResponse(user);
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
+        checkIsAdmin(authentication);
+
+        user.setStatus(userStatus);
+        userRepository.save(user);
+        return userMapper.toUserResponse(user);
     }
 
     @Override
@@ -137,6 +147,22 @@ public class UserServiceImpl implements UserService {
             return userMapper.toUserResponse(optionalUser.get());
         }else  {
             throw new UserNotFoundException("User not found");
+        }
+    }
+
+    private void checkIsAdmin(Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            throw new AccessDeniedException("you are not admin");
+        }
+    }
+
+    private void checkIsOwner(User user,String email) {
+        boolean isOwner = user.getEmail().equals(email);
+
+        if (!isOwner) {
+            throw new AccessDeniedException("Access denied");
         }
     }
 }
