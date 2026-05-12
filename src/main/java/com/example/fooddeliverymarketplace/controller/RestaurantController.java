@@ -23,8 +23,14 @@ public class RestaurantController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<BaseResponse> getRestaurants(){
-        List<RestaurantResponse> all = restaurantService.findAll();
+    public ResponseEntity<BaseResponse> getRestaurants(
+            @RequestParam(required = false) String restaurantName,
+            @RequestParam(required = false) Float rating,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        List<RestaurantResponse> all = restaurantService.findAllByCriterias(restaurantName,rating,active,page,size);
 
         return ResponseEntity.status(200).body(BaseResponse.ok(all));
     }

@@ -9,8 +9,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface RestaurantService {
-    List<RestaurantResponse> findAll();
-
     RestaurantResponse findById(Long restaurantId);
 
     RestaurantResponse create(@Valid RestaurantRequest restaurantRequest, Authentication authentication);
@@ -22,4 +20,6 @@ public interface RestaurantService {
     List<RestaurantResponse> findAllByOwner(Authentication authentication);
 
     List<RestaurantResponseWithMenuItems> getAllItemsByRestaurantId(Long restaurantId);
+
+    List<RestaurantResponse> findAllByCriterias(String restaurantName, Float rating, Boolean active, int page, int size);
 }

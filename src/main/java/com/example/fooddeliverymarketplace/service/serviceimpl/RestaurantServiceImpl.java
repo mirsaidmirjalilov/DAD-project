@@ -13,7 +13,12 @@ import com.example.fooddeliverymarketplace.repository.MenuItemRepository;
 import com.example.fooddeliverymarketplace.repository.RestaurantRepository;
 import com.example.fooddeliverymarketplace.repository.UserRepository;
 import com.example.fooddeliverymarketplace.service.RestaurantService;
+import com.example.fooddeliverymarketplace.service.specification.SpecificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,8 +36,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final UserRepository userRepository;
     private final MenuItemMapper menuItemMapper;
     private final MenuItemRepository  menuItemRepository;
+    private final SpecificationService  specificationService;
 
-    @Override
     public List<RestaurantResponse> findAll() {
         List<Restaurant> all = restaurantRepository.findAll();
 
@@ -159,5 +164,18 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         return allItems;
+    }
+
+    @Override
+    public List<RestaurantResponse> findAllByCriterias(String restaurantName, Float rating, Boolean active, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<Restaurant> specification = specificationService.getRestarauntSpecification(restaurantName,rating,active);
+
+        Page<Restaurant> restaurantPage = restaurantRepository.findAll(specification, pageable);
+
+        return restaurantPage.stream()
+                .map(restaurantMapper::toRestaurantResponse)
+                .toList();
     }
 }

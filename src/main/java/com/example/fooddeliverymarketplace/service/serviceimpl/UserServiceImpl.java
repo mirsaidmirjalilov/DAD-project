@@ -8,7 +8,7 @@ import com.example.fooddeliverymarketplace.payload.userpayload.UserRequest;
 import com.example.fooddeliverymarketplace.payload.userpayload.UserResponse;
 import com.example.fooddeliverymarketplace.repository.UserRepository;
 import com.example.fooddeliverymarketplace.service.UserService;
-import com.example.fooddeliverymarketplace.service.paging.SpecificationService;
+import com.example.fooddeliverymarketplace.service.specification.SpecificationService;
 import com.example.fooddeliverymarketplace.utils.Role;
 import com.example.fooddeliverymarketplace.utils.UserStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
