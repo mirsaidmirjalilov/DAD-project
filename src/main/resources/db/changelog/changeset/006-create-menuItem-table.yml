@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-menuItem
+      id: create-menu-items-table
       author: team
       changes:
         - createTable:
@@ -20,35 +20,37 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: description
-                  type: TEXT
+                  type: VARCHAR(255)
               - column:
                   name: price
-                  type: integer
+                  type: INT
                   constraints:
                     nullable: false
               - column:
                   name: available
                   type: BOOLEAN
                   defaultValueBoolean: true
-                  constraints:
-                    nullable: false
               - column:
                   name: restaurant_id
                   type: BIGINT
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_menu_item_restaurant
-                    referencedTableName: restaurants
-                    referencedColumnNames: id
               - column:
                   name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME
                   constraints:
                     nullable: false
               - column:
                   name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  type: DATETIME
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: add-menu-items
+      author: team
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: restaurant_id
+            baseTableName: menu_items
+            constraintName: fk_menu_items_restaurant
+            referencedColumnNames: id
+            referencedTableName: restaurants

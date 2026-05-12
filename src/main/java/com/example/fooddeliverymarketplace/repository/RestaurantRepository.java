@@ -1,7 +1,6 @@
 package com.example.fooddeliverymarketplace.repository;
 
 import com.example.fooddeliverymarketplace.entity.Restaurant;
-import com.example.fooddeliverymarketplace.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
