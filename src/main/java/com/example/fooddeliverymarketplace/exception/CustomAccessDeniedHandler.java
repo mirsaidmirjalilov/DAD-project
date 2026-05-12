@@ -25,7 +25,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         accessDeniedException.printStackTrace();
         String errorPath = request.getRequestURI();
-        String errorMessage = "You dont have ROLE for this url.";
+        String errorMessage = "You dont have ROLE for this request";
         accessDeniedException.getMessage();
         Integer errorCode = 403;  // Forbidden
         response.setStatus(errorCode);

@@ -29,11 +29,11 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(decodedBytes);
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .issuedAt(new Date())
-                .issuer("CARD_PROCESSING")
+                .issuer("FOOD-DELIVERY-MARKETPLACE")
                 .expiration(new Date(new Date().getTime() + expiration))
                 .signWith(signKey())
                 .compact();
