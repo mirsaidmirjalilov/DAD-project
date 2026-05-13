@@ -64,7 +64,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         User courier = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("Courier not found"));
 
-        Delivery delivery = deliveryRepository.findByIdWithLock(deliveryId)
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
 
         if (delivery.getStatus() != DeliveryStatus.WAITING_FOR_COURIER) {
@@ -80,7 +80,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public void pickUpDelivery(Long deliveryId, Authentication authentication) {
-        Delivery delivery = deliveryRepository.findByIdWithLock(deliveryId)
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
 
         if (delivery.getStatus() != DeliveryStatus.COURIER_ASSIGNED) {
@@ -96,7 +96,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public void completeDelivery(Long deliveryId, Authentication authentication) {
-        Delivery delivery = deliveryRepository.findByIdWithLock(deliveryId)
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
 
         if (delivery.getStatus() != DeliveryStatus.ON_THE_WAY) {
@@ -112,7 +112,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public void onTheWayDelivery(Long deliveryId, Authentication authentication) {
-        Delivery delivery = deliveryRepository.findByIdWithLock(deliveryId)
+        Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new DeliveryNotFoundException("Delivery not found"));
 
         if (delivery.getStatus() != DeliveryStatus.PICKED_UP) {
@@ -138,7 +138,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         List<OrderItemResponse> orderItemResponses = orderItems.stream().map(orderItemMapper::toOrderItemResponse).toList();
 
-        Order order = orderRepository.findByOrderId(orderId).orElseThrow(() -> new OrderNotFoundException("order not found"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("order not found"));
 
         return deliveriesByOrderId.stream()
                 .map(delivery -> deliveryMapper.toDeliveryResponseWithOrder(

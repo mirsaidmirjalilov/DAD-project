@@ -42,7 +42,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @ConfigurationPropertiesScan
 @EnableWebSecurity
 @EnableJpaRepositories
-@EnableCaching
 public class FoodDeliveryMarketplaceApplication {
 
     public static void main(String[] args) {

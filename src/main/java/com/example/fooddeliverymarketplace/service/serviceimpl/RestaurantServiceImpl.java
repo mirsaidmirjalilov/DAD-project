@@ -13,7 +13,6 @@ import com.example.fooddeliverymarketplace.payload.restaurantpayload.RestaurantR
 import com.example.fooddeliverymarketplace.repository.MenuItemRepository;
 import com.example.fooddeliverymarketplace.repository.RestaurantRepository;
 import com.example.fooddeliverymarketplace.repository.UserRepository;
-import com.example.fooddeliverymarketplace.service.RedisService;
 import com.example.fooddeliverymarketplace.service.RestaurantService;
 import com.example.fooddeliverymarketplace.service.specification.SpecificationService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -44,10 +41,6 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final MenuItemMapper menuItemMapper;
     private final MenuItemRepository  menuItemRepository;
     private final SpecificationService  specificationService;
-    private final RedisService redisService;
-
-    private static final String RESTAURANT_GET_KEY = "RESTAURANT_GET_KEY";
-    private static final Long RESTAURANT_GET_KEY_TTL = 2L;
 
     @Override
     @Cacheable(value = "restaurants",key = "#restaurantId")
@@ -128,7 +121,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         User owner = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
 
-        List<Restaurant> all = restaurantRepository.findAllByOwnerName(owner.getFullName());
+        List<Restaurant> all = restaurantRepository.findRestaurantsByOwner_FullName(owner.getFullName());
 
         if (all.isEmpty()) {
             throw new RestaurantNotFoundException("Restaurants not created yet");

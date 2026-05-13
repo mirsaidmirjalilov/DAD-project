@@ -34,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentResponse create(PaymentRequest paymentRequest) {
-        Order order = orderRepository.findByOrderId(paymentRequest.orderId()).orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        Order order = orderRepository.findById(paymentRequest.orderId()).orElseThrow(() -> new OrderNotFoundException("Order not found"));
 
         boolean paymentExists = paymentRepository.existsByOrderId(order.getId());
 

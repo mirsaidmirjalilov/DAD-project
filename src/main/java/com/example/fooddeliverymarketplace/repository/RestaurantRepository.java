@@ -13,5 +13,5 @@ import java.util.List;
 public interface RestaurantRepository extends JpaRepository<Restaurant,Long> {
     Page<Restaurant> findAll(Specification<Restaurant> specification, Pageable pageable);
 
-    List<Restaurant> findAllByOwnerName(String name);
+    List<Restaurant> findRestaurantsByOwner_FullName(String ownerFullName);
 }
