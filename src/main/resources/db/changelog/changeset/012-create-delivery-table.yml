@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-deliveries
+      author: team
+      changes:
+        - createTable:
+            tableName: deliveries
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_delivery_order
+                    referencedTableName: orders
+                    referencedColumnNames: id
+              - column:
+                  name: courier_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_delivery_courier
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: delivery_address
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: picked_up_at
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: delivered_at
+                  type: TIMESTAMP WITHOUT TIME ZONE

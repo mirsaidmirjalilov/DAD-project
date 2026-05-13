@@ -1,6 +1,5 @@
 package com.example.fooddeliverymarketplace.service.userdetails;
 
-
 import com.example.fooddeliverymarketplace.entity.auth.AuthPermission;
 import com.example.fooddeliverymarketplace.entity.auth.AuthRole;
 import com.example.fooddeliverymarketplace.entity.auth.AuthUser;
@@ -9,19 +8,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public record CustomUserDetails(AuthUser authUser) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        Set<GrantedAuthority> authorities = new HashSet<>(); // Use Set to avoid duplicates
+
         for (AuthRole authRole : authUser.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + authRole.getCode()));
-            for (AuthPermission authPermission : authRole.getPermissions()) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + authPermission.getCode()));
+
+            if (authRole.getPermissions() != null) {
+                for (AuthPermission permission : authRole.getPermissions()) {
+                    authorities.add(new SimpleGrantedAuthority(permission.getCode()));
+                }
             }
         }
         return authorities;

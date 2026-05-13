@@ -14,20 +14,26 @@ import com.example.fooddeliverymarketplace.utils.UserStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -57,8 +63,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-
-
     @Override
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public List<UserResponse> getAllUsers(
@@ -83,6 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users",key = "#userId")
     public UserResponse getUserById(@NonNull Long userId,Authentication authentication) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
@@ -96,9 +101,8 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-
-
     @Override
+    @Transactional
     public UserResponse updateUser(@NonNull Long userId, UserRequest userRequest,Authentication authentication) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
@@ -113,6 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserById(@NonNull Long userId,Authentication authentication) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id: " + userId + " not found"));
@@ -124,6 +129,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse changeUserStatus(
             @NonNull Long userId,
             UserStatus userStatus,
@@ -140,6 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users", key = "#email")
     public UserResponse getUserByEmail(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
@@ -164,5 +171,10 @@ public class UserServiceImpl implements UserService {
         if (!isOwner) {
             throw new AccessDeniedException("Access denied");
         }
+    }
+    @CacheEvict(cacheNames = {"users"}, allEntries = true)
+    @Scheduled(cron = "* */5 * * * *")
+    public void evictCache() {
+        log.info("restaurant related cache evict");
     }
 }

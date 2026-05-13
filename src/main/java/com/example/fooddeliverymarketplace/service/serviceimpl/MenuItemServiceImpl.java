@@ -2,7 +2,6 @@ package com.example.fooddeliverymarketplace.service.serviceimpl;
 
 import com.example.fooddeliverymarketplace.entity.MenuItem;
 import com.example.fooddeliverymarketplace.entity.Restaurant;
-import com.example.fooddeliverymarketplace.entity.User;
 import com.example.fooddeliverymarketplace.exception.menuitem.ItemInMenuNotFoundException;
 import com.example.fooddeliverymarketplace.exception.restaurant.RestaurantNotFoundException;
 import com.example.fooddeliverymarketplace.mapper.MenuItemMapper;
@@ -11,19 +10,26 @@ import com.example.fooddeliverymarketplace.payload.menuitempayload.MenuItemRespo
 import com.example.fooddeliverymarketplace.repository.MenuItemRepository;
 import com.example.fooddeliverymarketplace.repository.RestaurantRepository;
 import com.example.fooddeliverymarketplace.service.MenuItemService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuItemServiceImpl implements MenuItemService {
     private final MenuItemRepository menuItemRepository;
     private final MenuItemMapper menuItemMapper;
     private final RestaurantRepository restaurantRepository;
 
     @Override
+    @Cacheable(value = "menuItems", key = "#menuItemId")
     public MenuItemResponse getByMenuItemId(Long menuItemId) {
         MenuItem foundInMenu = menuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new ItemInMenuNotFoundException("Item not found in Menu"));
@@ -49,6 +55,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Override
+    @Transactional
     public MenuItemResponse update(
             Long menuItemId,
             MenuItemRequest menuItemRequest,
@@ -69,6 +76,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Override
+    @Transactional
     public void delete(Long menuItemId, Authentication authentication) {
         MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new ItemInMenuNotFoundException("Item not found in Menu"));
 
@@ -82,5 +90,11 @@ public class MenuItemServiceImpl implements MenuItemService {
         if (!isAdmin) {
             throw new AccessDeniedException("you are not admin");
         }
+    }
+
+    @CacheEvict(cacheNames = {"menuItems"}, allEntries = true)
+    @Scheduled(cron = "* */5 * * * *")
+    public void evictCache() {
+        log.info("restaurant related cache evict");
     }
 }

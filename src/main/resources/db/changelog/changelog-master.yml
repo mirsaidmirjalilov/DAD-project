@@ -11,3 +11,15 @@ databaseChangeLog:
       file: db/changelog/changeset/005-create-restaurant-table.yml
   - include:
       file: db/changelog/changeset/006-create-menuItem-table.yml
+  - include:
+      file: db/changelog/changeset/007-create-cart-table.yml
+  - include:
+      file: db/changelog/changeset/008-create-cartItem-table.yml
+  - include:
+      file: db/changelog/changeset/009-create-order-table.yml
+  - include:
+      file: db/changelog/changeset/010-create-orderItem-table.yml
+  - include:
+      file: db/changelog/changeset/011-create-payment-table.yml
+  - include:
+      file: db/changelog/changeset/012-create-delivery-table.yml

@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order-items
+      author: team
+      changes:
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_order
+                    referencedTableName: orders
+                    referencedColumnNames: id
+                    deleteCascade: true
+              - column:
+                  name: menu_item_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_menu_item
+                    referencedTableName: menu_items
+                    referencedColumnNames: id
+              - column:
+                  name: quantity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
