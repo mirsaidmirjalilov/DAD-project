@@ -77,6 +77,7 @@ public class DeliveryController {
             @PathVariable Long orderId,
             Authentication authentication
     ){
-        deliveryService.getUserDeliveries(orderId,authentication)
+        List<DeliveryResponseWithOrder> userDeliveries = deliveryService.getUserDeliveries(orderId, authentication);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.ok(userDeliveries));
     }
 }
