@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: food-delivery-backend
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: postgres
+    password: Mirsaid15
+    driver-class-name: org.postgresql.Driver
+
+  data:
+    mongodb:
+      uri: mongodb://admin:Mirsaid15@mongodb:27017/food_delivery?authSource=admin
+  liquibase:
+    enabled: true
+    analytics-enabled: true
+
+server:
+  port: 8080
