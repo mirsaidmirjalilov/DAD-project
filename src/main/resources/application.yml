@@ -22,6 +22,9 @@ spring:
     redis:
       host: localhost
       port: 6379
+      
+    mongodb:
+      uri: mongodb://admin:Mirsaid15@localhost:27017/food_delivery?authSource=admin
 
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yml

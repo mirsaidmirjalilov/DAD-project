@@ -76,7 +76,7 @@ public class OrderController {
     public ResponseEntity<BaseResponse> updateOrderStatus(
             @PathVariable Long orderId,
             Authentication authentication,
-            UpdateOrderStatusRequest orderStatus
+            @RequestBody UpdateOrderStatusRequest orderStatus
     ) {
         orderService.updateOrderStatus(orderId, orderStatus, authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(BaseResponse.ok());
