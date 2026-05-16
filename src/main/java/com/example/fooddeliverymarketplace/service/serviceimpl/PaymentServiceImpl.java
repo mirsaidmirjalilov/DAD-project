@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -60,6 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Cacheable(value = "payments", key = "#orderId")
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     public PaymentResponse getPaymentByOrder(Long orderId) {
         Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> new PaymentNotFoundException("Payment not found"));
 
@@ -67,7 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @CacheEvict(cacheNames = {"payments"}, allEntries = true)
-    @Scheduled(cron = "* */5 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }

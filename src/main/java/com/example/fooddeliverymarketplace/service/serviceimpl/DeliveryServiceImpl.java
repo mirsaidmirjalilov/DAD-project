@@ -127,6 +127,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userDeliveries",key = "#orderId")
     public List<DeliveryResponseWithOrder> getUserDeliveries(Long orderId, Authentication authentication) {
         List<Delivery> deliveriesByOrderId = deliveryRepository.findDeliveriesByOrderId(orderId);
 
@@ -149,8 +150,8 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .toList();
     }
 
-    @CacheEvict(cacheNames = {"restaurants","restaurant-menu"}, allEntries = true)
-    @Scheduled(cron = "* */2 * * * *")
+    @CacheEvict(cacheNames = {"availableDeliveries","userDeliveries"}, allEntries = true)
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }

@@ -51,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemMapper orderItemMapper;
 
     @Override
+    @Transactional
     public OrderResponse create(OrderRequest orderRequest, Authentication authentication) {
         User user = getUser(authentication);
 
@@ -111,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(value = "orders", key = "#orderId")
+    @Cacheable(value = "orders", key = "#authentication.name")
     public List<OrderResponse> getMyOrders(Authentication authentication) {
         User user = getUser(authentication);
 
@@ -166,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @CacheEvict(cacheNames = {"orders"}, allEntries = true)
-    @Scheduled(cron = "* */5 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }

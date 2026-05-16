@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
 
     @Override
-    @CacheEvict(cacheNames = {"userCarts"}, key = "#authentication.name")
+    @Transactional
     public CartResponse create(CartRequest cartRequest, Authentication authentication) {
         User user = getUser(authentication);
 
@@ -120,6 +120,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public void clearCart(Authentication authentication) {
         User user = getUser(authentication);
 
@@ -181,7 +182,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @CacheEvict(cacheNames = {"userCarts"}, allEntries = true)
-    @Scheduled(cron = "* */5 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }

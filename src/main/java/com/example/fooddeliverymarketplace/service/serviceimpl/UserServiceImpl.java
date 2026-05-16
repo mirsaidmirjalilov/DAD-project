@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Cacheable(value = "userList", key = "{#role, #userStatus, #page, #size}")
     public List<UserResponse> getAllUsers(
             Role role,
             UserStatus userStatus,
@@ -87,6 +89,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN','OWNER')")
     @Cacheable(value = "users",key = "#userId")
     public UserResponse getUserById(@NonNull Long userId,Authentication authentication) {
         User user = userRepository.findById(userId)
@@ -172,8 +175,8 @@ public class UserServiceImpl implements UserService {
             throw new AccessDeniedException("Access denied");
         }
     }
-    @CacheEvict(cacheNames = {"users"}, allEntries = true)
-    @Scheduled(cron = "* */5 * * * *")
+    @CacheEvict(cacheNames = {"users","userList"}, allEntries = true)
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }

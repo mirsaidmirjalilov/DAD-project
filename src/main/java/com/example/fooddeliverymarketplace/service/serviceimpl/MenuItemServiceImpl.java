@@ -38,6 +38,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Override
+    @Transactional
     public MenuItemResponse createMenuItem(MenuItemRequest menuItemRequest, Authentication authentication) {
         checkIsAdmin(authentication);
 
@@ -93,7 +94,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @CacheEvict(cacheNames = {"menuItems"}, allEntries = true)
-    @Scheduled(cron = "* */5 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }

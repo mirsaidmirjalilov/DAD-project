@@ -15,6 +15,7 @@ import com.example.fooddeliverymarketplace.repository.RestaurantRepository;
 import com.example.fooddeliverymarketplace.repository.UserRepository;
 import com.example.fooddeliverymarketplace.service.RestaurantService;
 import com.example.fooddeliverymarketplace.service.specification.SpecificationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional
     public RestaurantResponse create(RestaurantRequest restaurantRequest, Authentication authentication) {
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROEL_ADMIN"));
 
@@ -76,6 +79,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional
     public RestaurantResponse update(Long restaurantId, RestaurantRequest restaurantRequest, Authentication authentication) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id: " + restaurantId + " not found"));
@@ -101,6 +105,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional
     public void delete(Long restaurantId, Authentication authentication) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException("Restaurant with id: " + restaurantId + " not found"));
@@ -116,6 +121,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @PreAuthorize("hasRole('OWNER')")
+    @Cacheable(value = "ownerRestaurants")
     public List<RestaurantResponse> findAllByOwner(Authentication authentication) {
         String email = authentication.getName();
 
@@ -166,8 +173,8 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .toList();
     }
 
-    @CacheEvict(cacheNames = {"restaurants","restaurant-menu"}, allEntries = true)
-    @Scheduled(cron = "* */5 * * * *")
+    @CacheEvict(cacheNames = {"restaurants","restaurant-menu","ownerRestaurants"}, allEntries = true)
+    @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
         log.info("restaurant related cache evict");
     }
