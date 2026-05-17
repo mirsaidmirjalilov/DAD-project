@@ -178,6 +178,6 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(cacheNames = {"users","userList"}, allEntries = true)
     @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
-        log.info("restaurant related cache evict");
+        log.info("user related cache evict");
     }
 }

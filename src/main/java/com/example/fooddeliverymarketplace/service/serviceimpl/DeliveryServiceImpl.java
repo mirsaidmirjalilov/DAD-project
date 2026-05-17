@@ -153,6 +153,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     @CacheEvict(cacheNames = {"availableDeliveries","userDeliveries"}, allEntries = true)
     @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
-        log.info("restaurant related cache evict");
+        log.info("delivery related cache evict");
     }
 }

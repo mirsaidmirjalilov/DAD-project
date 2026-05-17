@@ -18,6 +18,8 @@ spring:
     password: Mirsaid15
     driver-class-name: org.postgresql.Driver
 
+  mongodb:
+    uri: mongodb://admin:Mirsaid15@localhost:27017/food_delivery?authSource=admin
   data:
     redis:
       host: localhost

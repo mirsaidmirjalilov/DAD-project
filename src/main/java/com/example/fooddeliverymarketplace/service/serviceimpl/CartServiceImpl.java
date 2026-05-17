@@ -184,6 +184,6 @@ public class CartServiceImpl implements CartService {
     @CacheEvict(cacheNames = {"userCarts"}, allEntries = true)
     @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
-        log.info("restaurant related cache evict");
+        log.info("cart related cache evict");
     }
 }

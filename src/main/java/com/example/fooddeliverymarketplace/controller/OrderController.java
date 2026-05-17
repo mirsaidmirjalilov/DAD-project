@@ -50,8 +50,6 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.ok(orderResponse));
     }
 
-
-
     @GetMapping("/my")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<BaseResponse> getMyOrders(Authentication authentication) {
@@ -76,7 +74,7 @@ public class OrderController {
     public ResponseEntity<BaseResponse> updateOrderStatus(
             @PathVariable Long orderId,
             Authentication authentication,
-            UpdateOrderStatusRequest orderStatus
+            @RequestBody UpdateOrderStatusRequest orderStatus
     ) {
         orderService.updateOrderStatus(orderId, orderStatus, authentication);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(BaseResponse.ok());

@@ -96,6 +96,6 @@ public class MenuItemServiceImpl implements MenuItemService {
     @CacheEvict(cacheNames = {"menuItems"}, allEntries = true)
     @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
-        log.info("restaurant related cache evict");
+        log.info("menu item related cache evict");
     }
 }

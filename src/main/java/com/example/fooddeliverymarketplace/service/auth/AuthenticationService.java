@@ -42,4 +42,3 @@ public class AuthenticationService {
         return "You are registered";
     }
 }
-

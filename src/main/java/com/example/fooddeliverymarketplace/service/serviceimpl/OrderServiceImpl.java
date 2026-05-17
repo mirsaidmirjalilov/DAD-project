@@ -21,6 +21,7 @@ import com.example.fooddeliverymarketplace.repository.cartrepository.CartReposit
 import com.example.fooddeliverymarketplace.repository.order.OrderItemRepository;
 import com.example.fooddeliverymarketplace.repository.order.OrderRepository;
 import com.example.fooddeliverymarketplace.service.OrderService;
+import com.example.fooddeliverymarketplace.service.OrderTrackingService;
 import com.example.fooddeliverymarketplace.utils.OrderStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemRepository cartItemRepository;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
+    private final OrderTrackingService orderTrackingService;
 
     @Override
     @Transactional
@@ -83,6 +86,16 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderRepository.save(order);
+
+        orderTrackingService.addEvent(
+                order.getId(),
+                OrderStatus.PENDING,
+                "Order was created and is waiting for restaurant confirmation",
+                Map.of(
+                        "restaurantId", restaurant.getId(),
+                        "userId", user.getId()
+                )
+        );
 
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -149,6 +162,16 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(orderStatus.orderStatus());
         orderRepository.save(order);
+
+        orderTrackingService.addEvent(
+                order.getId(),
+                orderStatus.orderStatus(),
+                "Order status was updated to " + orderStatus.orderStatus(),
+                Map.of(
+                        "restaurantId", order.getRestaurant().getId(),
+                        "userId", order.getUser().getId()
+                )
+        );
     }
 
     @Override
@@ -158,6 +181,16 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
+
+        orderTrackingService.addEvent(
+                order.getId(),
+                OrderStatus.CANCELLED,
+                "Order was cancelled",
+                Map.of(
+                        "restaurantId", order.getRestaurant().getId(),
+                        "userId", order.getUser().getId()
+                )
+        );
     }
 
     private User getUser(Authentication authentication) {
@@ -169,6 +202,6 @@ public class OrderServiceImpl implements OrderService {
     @CacheEvict(cacheNames = {"orders"}, allEntries = true)
     @Scheduled(cron = "0 0 * * * *")
     public void evictCache() {
-        log.info("restaurant related cache evict");
+        log.info("order related cache evict");
     }
 }

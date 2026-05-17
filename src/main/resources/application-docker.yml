@@ -8,12 +8,11 @@ spring:
     password: Mirsaid15
     driver-class-name: org.postgresql.Driver
 
-  data:
-    mongodb:
-      uri: mongodb://admin:Mirsaid15@mongodb:27017/food_delivery?authSource=admin
   liquibase:
     enabled: true
     analytics-enabled: true
+  mongodb:
+    uri: mongodb://admin:Mirsaid15@mongodb:27017/food_delivery?authSource=admin
 
 server:
   port: 8080
