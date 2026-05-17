@@ -25,6 +25,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 1. Check if this is a WebSocket handshake request
+        String path = request.getRequestURI();
+        if (path != null && path.startsWith("/ws")) {
+            filterChain.doFilter(request, response); // Pass through without checking for JWT token
+            return;
+        }
+
+        // 2. Fall back to standard JWT validation for all other REST paths
         String authorization =  request.getHeader("Authorization");
 
         if(authorization == null || !authorization.startsWith("Bearer ")) {
