@@ -6,6 +6,7 @@ import com.example.fooddeliverymarketplace.utils.OrderStatus;
 import java.util.Map;
 
 public interface OrderTrackingService {
+
     OrderTrackingDocument addEvent(
             Long orderId,
             OrderStatus status,
