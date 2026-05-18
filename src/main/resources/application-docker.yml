@@ -3,14 +3,17 @@ spring:
     name: food-delivery-backend
 
   datasource:
-      url: ${SPRING_DATASOURCE_URL}
-      username: ${SPRING_DATASOURCE_USERNAME}
-      password: ${SPRING_DATASOURCE_PASSWORD}
-      driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: postgres
+    password: Mirsaid15
 
   liquibase:
     enabled: true
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
     analytics-enabled: true
+
   mongodb:
     uri: mongodb://admin:Mirsaid15@mongodb:27017/food_delivery?authSource=admin
 

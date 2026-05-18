@@ -27,6 +27,10 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yml
+    enabled: true
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
 
 springdoc:
   swagger-ui:
