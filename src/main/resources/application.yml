@@ -13,10 +13,9 @@ spring:
         format_sql: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: Mirsaid15
-    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   mongodb:
     uri: mongodb://admin:Mirsaid15@localhost:27017/food_delivery?authSource=admin
