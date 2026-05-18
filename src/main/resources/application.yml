@@ -16,6 +16,7 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   mongodb:
     uri: mongodb://admin:Mirsaid15@localhost:27017/food_delivery?authSource=admin
