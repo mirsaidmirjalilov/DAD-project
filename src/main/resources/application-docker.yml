@@ -9,10 +9,9 @@ spring:
 
   liquibase:
     enabled: true
-    url: ${DATABASE_URL}
-    username: ${DB_USERNAME:}
-    password: ${DB_PASSWORD:}
-    analytics-enabled: true
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: postgres
+    password: Mirsaid15
 
   mongodb:
     uri: mongodb://admin:Mirsaid15@mongodb:27017/food_delivery?authSource=admin
