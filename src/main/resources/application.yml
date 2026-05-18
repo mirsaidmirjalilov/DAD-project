@@ -7,7 +7,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -26,11 +26,11 @@ spring:
       port: 6379
 
   liquibase:
+    enabled: false
     change-log: classpath:db/changelog/changelog-master.yml
-    enabled: true
     url: ${DATABASE_URL}
-    username: ${DB_USERNAME:}
-    password: ${DB_PASSWORD:}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
 springdoc:
   swagger-ui:
