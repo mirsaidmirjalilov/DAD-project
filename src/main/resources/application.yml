@@ -26,7 +26,7 @@ spring:
       port: 6379
 
   liquibase:
-    enabled: false
+    enabled: ${SPRING_LIQUIBASE_ENABLED:false}
     change-log: classpath:db/changelog/changelog-master.yml
     url: ${DATABASE_URL}
     username: ${DB_USERNAME}
